@@ -4,7 +4,7 @@ A recreation of the Bolly shampoo landing page built with **WordPress + Elemento
 featuring a custom **interactive 3D product viewer** built with Three.js.
 
 ## 🔗 Live Demo / Screen Recording
-[Add your screen recording link here — Loom / YouTube unlisted / Google Drive]
+https://youtu.be/Xy9SkXuZV9Y?si=I5jDJzbXq2gQTNAs
 
 ## 🛠 Tech Stack
 - **WordPress** — CMS
