@@ -1,0 +1,642 @@
+<!--
+  BOLLY SHAMPOO LANDING PAGE — Converted from React/Three.js (AI Studio) to plain HTML/CSS/JS
+  ---------------------------------------------------------------------------------------------
+  HOW TO USE IN ELEMENTOR:
+  1. In your "Home" page, add ONE full-width Section.
+  2. Inside it, add a single column, and inside that column drag an "HTML" widget.
+  3. Paste this ENTIRE file's content into that HTML widget.
+  4. That's it — header, hero, and the interactive 3D bottle are all in this one block.
+
+  Interaction:
+  - Desktop: move your mouse over the bottle area — it follows the cursor (matches original AI Studio behavior).
+  - Mobile/touch: drag your finger across the bottle to rotate it.
+-->
+
+<style>
+  #bolly-app {
+    --purple: #5c22af;
+    --yellow: #e2f952;
+    --lavender: #f3effb;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #d5d5db;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  #bolly-app * { box-sizing: border-box; }
+
+  .bolly-card {
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    background: #eae7f5;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 32px 96px -12px rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.6);
+    background-image:
+      linear-gradient(to right, rgba(92,34,175,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(92,34,175,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .bolly-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 10;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .bolly-logo {
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bolly-logo .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--purple);
+  }
+  .bolly-nav {
+    display: flex;
+    align-items: center;
+    background: #EBE8F3;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 6px;
+    border-radius: 999px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .bolly-nav button {
+    border: none;
+    background: none;
+    padding: 10px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #334155;
+    cursor: pointer;
+    border-radius: 999px;
+  }
+  .bolly-nav button.active {
+    background: var(--purple);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(92,34,175,0.3);
+  }
+  .bolly-actions { display: flex; align-items: center; gap: 12px; }
+  .bolly-heart {
+    width: 42px; height: 42px; border-radius: 999px;
+    border: 1px solid #cbd5e1; background: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+  }
+  .bolly-cart-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1px solid #cbd5e1; border-radius: 999px;
+    padding: 8px 8px 8px 18px; cursor: pointer;
+  }
+  .bolly-cart-btn span {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #1e293b;
+  }
+  .bolly-cart-icon {
+    width: 32px; height: 32px; border-radius: 999px;
+    background: var(--yellow);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; position: relative;
+  }
+  .cart-badge {
+    position: absolute; top: -4px; right: -6px;
+    background: #ef4444; color: #fff; font-size: 10px; font-weight: 800;
+    width: 18px; height: 18px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #fff;
+  }
+
+  /* ---------- HERO ---------- */
+  .bolly-hero {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 32px 64px;
+    display: grid;
+    grid-template-columns: 5fr 4fr 3fr;
+    gap: 32px;
+    align-items: center;
+    z-index: 5;
+  }
+  .hero-left { display: flex; flex-direction: column; justify-content: center; }
+
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border: 1px solid rgba(138,114,241,0.15);
+    padding: 6px 6px 6px 16px; border-radius: 999px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #0f172a; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    width: fit-content; margin-bottom: 24px;
+  }
+  .badge-pill .tag {
+    background: var(--purple); color: #fff;
+    padding: 6px 12px; border-radius: 999px; font-size: 10px;
+  }
+
+  .hero-headline {
+    font-size: clamp(42px, 7vw, 100px);
+    font-weight: 900;
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: #0f172a;
+    margin: 0 0 24px;
+  }
+  .hero-headline span { display: block; }
+
+  .hero-desc {
+    font-size: 15px; color: #475569; font-weight: 500;
+    max-width: 420px; line-height: 1.6; margin-bottom: 28px;
+  }
+  .hero-benefits {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: #64748b;
+  }
+  .hero-benefits span { display: flex; align-items: center; gap: 6px; }
+  .hero-benefits .check { color: #10b981; font-weight: 900; }
+
+  /* ---------- 3D BOTTLE CONTAINER ---------- */
+  .hero-center {
+    height: 500px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .glow-blob {
+    position: absolute; width: 420px; height: 420px; border-radius: 999px;
+    background: radial-gradient(circle, rgba(92,34,175,0.2) 0%, transparent 70%);
+    filter: blur(30px);
+    animation: pulseGlow 8s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.15) rotate(180deg); }
+  }
+  .ring-outer, .ring-inner {
+    position: absolute; border-radius: 999px; border: 1px solid rgba(138,114,241,0.15);
+  }
+  .ring-outer { width: 480px; height: 480px; }
+  .ring-inner {
+    width: 390px; height: 390px; border: 1px dashed rgba(138,114,241,0.25);
+    animation: spin 120s linear infinite;
+  }
+  @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+
+  #bottle-canvas-holder {
+    width: 100%; height: 100%; max-width: 480px; max-height: 480px;
+    position: relative; z-index: 2; touch-action: none; cursor: grab;
+  }
+  #bottle-canvas-holder canvas { width: 100% !important; height: 100% !important; display: block; }
+
+  .drag-hint {
+    position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--purple); background: rgba(255,255,255,0.85);
+    padding: 5px 14px; border-radius: 999px; z-index: 3;
+    transition: opacity .4s;
+  }
+
+  /* ---------- RIGHT CARD ---------- */
+  .hero-right { display: flex; flex-direction: column; gap: 20px; }
+  .quote-card {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(226,232,240,0.8);
+    border-radius: 32px; padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .quote-card p {
+    font-weight: 700; font-size: 19px; color: #0f172a; line-height: 1.4;
+    margin: 0 0 28px;
+  }
+  .quote-card p em {
+    font-family: "Playfair Display", serif; font-style: italic; font-weight: 300;
+    color: var(--purple); font-size: 1.2em;
+  }
+  .explore-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; background: #0f172a; color: #fff; border: none;
+    padding: 6px 6px 6px 24px; border-radius: 999px; cursor: pointer;
+    font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .explore-btn .arrow-circle {
+    width: 40px; height: 40px; border-radius: 999px; background: var(--yellow);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    color: #0f172a;
+  }
+
+  /* ---------- MOBILE NAV (shown only on small screens) ---------- */
+  .mobile-nav { display: none; justify-content: center; margin-bottom: 24px; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .bolly-hero { grid-template-columns: 1fr; }
+    .hero-center { height: 380px; order: -1; }
+    .bolly-nav { display: none; }
+    .mobile-nav { display: flex; }
+  }
+  @media (max-width: 480px) {
+    #bolly-app { padding: 8px; }
+    .bolly-card { border-radius: 24px; }
+    .bolly-header { padding: 16px 20px; }
+    .hero-center { height: 300px; }
+    .hero-headline { font-size: 38px; }
+  }
+</style>
+
+<div id="bolly-app">
+  <div class="bolly-card">
+
+    <!-- HEADER -->
+    <header class="bolly-header">
+      <div class="bolly-logo">bolly <span class="dot"></span></div>
+
+      <nav class="bolly-nav">
+        <button class="active">Shop +</button>
+        <button>About</button>
+        <button>Blog</button>
+        <button>Contact</button>
+      </nav>
+
+      <div class="bolly-actions">
+        <button class="bolly-heart" id="bolly-heart-btn">♡</button>
+        <button class="bolly-cart-btn" id="bolly-cart-btn">
+          <span>Cart</span>
+          <span class="bolly-cart-icon">
+            🛍
+            <span class="cart-badge" id="bolly-cart-count" style="display:none;">0</span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="bolly-hero">
+
+      <!-- LEFT -->
+      <div class="hero-left">
+        <div class="mobile-nav">
+          <div class="bolly-nav" style="display:flex;">
+            <button class="active">Shop +</button>
+            <button>About</button>
+            <button>Contact</button>
+          </div>
+        </div>
+
+        <div class="badge-pill">FROM ROOT <span class="tag">TO SHINE</span></div>
+
+        <h1 class="hero-headline">
+          <span>Knock</span>
+          <span>Out</span>
+          <span>Flakes</span>
+        </h1>
+
+        <p class="hero-desc">
+          No more dry scalp. Just clean, healthy, and revitalized hair with our advanced organic
+          ingredients and customized pH balancing formula.
+        </p>
+
+        <div class="hero-benefits">
+          <span><span class="check">✓</span> 98% Dandruff Less</span>
+          <span><span class="check">✓</span> 100% Organic</span>
+          <span><span class="check">✓</span> Sulfate-free</span>
+        </div>
+      </div>
+
+      <!-- CENTER: 3D BOTTLE -->
+      <div class="hero-center">
+        <div class="glow-blob"></div>
+        <div class="ring-outer"></div>
+        <div class="ring-inner"></div>
+        <div id="bottle-canvas-holder"></div>
+        <div class="drag-hint" id="bolly-drag-hint">Drag / move to rotate</div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="hero-right">
+        <div class="quote-card">
+          <p>"Journey into the <em>wonderful</em> world of shampoo"</p>
+          <button class="explore-btn" id="bolly-explore-btn">
+            <span>Explore More</span>
+            <span class="arrow-circle">↗</span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700;1,800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  // ---------- Small UI interactions ----------
+  let cartCount = 0;
+  let liked = false;
+  const heartBtn = document.getElementById('bolly-heart-btn');
+  const cartBtn = document.getElementById('bolly-cart-btn');
+  const cartBadge = document.getElementById('bolly-cart-count');
+  const exploreBtn = document.getElementById('bolly-explore-btn');
+
+  heartBtn.addEventListener('click', function () {
+    liked = !liked;
+    heartBtn.textContent = liked ? '♥' : '♡';
+    heartBtn.style.color = liked ? '#ef4444' : '';
+  });
+
+  function addToCart() {
+    cartCount++;
+    cartBadge.textContent = cartCount;
+    cartBadge.style.display = 'flex';
+  }
+  cartBtn.addEventListener('click', addToCart);
+  exploreBtn.addEventListener('click', addToCart);
+
+  // ---------- 3D Bottle (Three.js) ----------
+  const container = document.getElementById('bottle-canvas-holder');
+  const hint = document.getElementById('bolly-drag-hint');
+
+  const bottleColor = '#5c22af';
+  const variantName = 'Clarify';
+  const tagline = 'Dandruff Relief • Organic Extracts';
+  const subline = 'Tea Tree Oil & Aloe Vera Formula';
+
+  function init() {
+    const width = container.clientWidth || 400;
+    const height = container.clientHeight || 400;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.set(0, 0, 7.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    container.appendChild(renderer.domElement);
+
+    const bottleGroup = new THREE.Group();
+    scene.add(bottleGroup);
+
+    // ----- Label texture -----
+    function createLabelTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2048; canvas.height = 2048;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(2, 2);
+
+      ctx.fillStyle = bottleColor;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.save();
+      ctx.translate(512, 0);
+      ctx.scale(0.22, 1.0);
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'italic 900 390px "Playfair Display", serif';
+      ctx.fillText('bolly', 0, 330);
+
+      ctx.textAlign = 'left';
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-720, 560);
+      ctx.lineTo(-120, 560);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'italic 500 84px Georgia, serif';
+      ctx.fillText(variantName, -720, 630);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.font = 'bold 52px Inter, sans-serif';
+      ctx.fillText('Shampoo', -720, 695);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '26px Inter, sans-serif';
+      ctx.fillText(tagline, -720, 760);
+      ctx.fillText(subline, -720, 805);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = 'bold 26px Inter, sans-serif';
+      ctx.fillText('250ml e 8.5 FL. OZ.', -720, 875);
+
+      ctx.restore();
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    const labelTexture = createLabelTexture();
+    labelTexture.wrapS = THREE.RepeatWrapping;
+    labelTexture.wrapT = THREE.ClampToEdgeWrapping;
+    labelTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    labelTexture.magFilter = THREE.LinearFilter;
+    labelTexture.generateMipmaps = true;
+    labelTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    const bottleMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff, roughness: 0.16, metalness: 0.05,
+      clearcoat: 1.0, clearcoatRoughness: 0.08, map: labelTexture,
+    });
+    const solidMaterial = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(bottleColor), roughness: 0.16, metalness: 0.05,
+      clearcoat: 1.0, clearcoatRoughness: 0.08,
+    });
+
+    // Body
+    const bodyGeom = new THREE.CylinderGeometry(1.23, 1.23, 1.7, 96, 1, true);
+    const bodyMesh = new THREE.Mesh(bodyGeom, bottleMaterial);
+    bodyMesh.position.y = -0.1;
+    bodyMesh.rotation.y = Math.PI;
+    bottleGroup.add(bodyMesh);
+
+    // Bottom
+    const bottomPoints = [
+      new THREE.Vector2(0, -1.25), new THREE.Vector2(0.85, -1.25),
+      new THREE.Vector2(1.02, -1.23), new THREE.Vector2(1.12, -1.19),
+      new THREE.Vector2(1.19, -1.11), new THREE.Vector2(1.22, -1.03),
+      new THREE.Vector2(1.23, -0.95)
+    ];
+    const bottomGeom = new THREE.LatheGeometry(bottomPoints, 96);
+    bottleGroup.add(new THREE.Mesh(bottomGeom, solidMaterial));
+
+    // Shoulder + neck
+    const shoulderPoints = [
+      new THREE.Vector2(1.23, 0.75), new THREE.Vector2(1.21, 0.85),
+      new THREE.Vector2(1.14, 0.92), new THREE.Vector2(1.02, 0.98),
+      new THREE.Vector2(0.88, 1.02), new THREE.Vector2(0.75, 1.05),
+      new THREE.Vector2(0.68, 1.07), new THREE.Vector2(0.64, 1.10),
+      new THREE.Vector2(0.62, 1.13), new THREE.Vector2(0.62, 1.25)
+    ];
+    const shoulderGeom = new THREE.LatheGeometry(shoulderPoints, 96);
+    bottleGroup.add(new THREE.Mesh(shoulderGeom, solidMaterial));
+
+    // Pump
+    const pumpGroup = new THREE.Group();
+    pumpGroup.position.set(0, 1.25, 0);
+    bottleGroup.add(pumpGroup);
+
+    const pumpMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff, roughness: 0.55, metalness: 0.0,
+      clearcoat: 0.08, clearcoatRoughness: 0.4,
+    });
+
+    const collarGeom = new THREE.CylinderGeometry(0.68, 0.70, 0.35, 48);
+    const collarMesh = new THREE.Mesh(collarGeom, pumpMaterial);
+    collarMesh.position.y = 0.175;
+    pumpGroup.add(collarMesh);
+
+    const stemGeom = new THREE.CylinderGeometry(0.28, 0.28, 0.55, 24);
+    const stemMesh = new THREE.Mesh(stemGeom, pumpMaterial);
+    stemMesh.position.y = 0.625;
+    pumpGroup.add(stemMesh);
+
+    const headBaseGeom = new THREE.CylinderGeometry(0.32, 0.32, 0.52, 48);
+    const headBaseMesh = new THREE.Mesh(headBaseGeom, pumpMaterial);
+    headBaseMesh.position.y = 1.16;
+    pumpGroup.add(headBaseMesh);
+
+    const headTopGeom = new THREE.SphereGeometry(0.32, 24, 24);
+    const headTopMesh = new THREE.Mesh(headTopGeom, pumpMaterial);
+    headTopMesh.position.y = 1.42;
+    pumpGroup.add(headTopMesh);
+
+    const spoutCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, 1.38, -0.15), new THREE.Vector3(0, 1.45, 0.10),
+      new THREE.Vector3(0, 1.50, 0.40), new THREE.Vector3(0, 1.58, 0.70),
+      new THREE.Vector3(0, 1.66, 0.95), new THREE.Vector3(0, 1.74, 1.15),
+    ]);
+    const numSamples = 60;
+    for (let i = 0; i < numSamples; i++) {
+      const t = i / (numSamples - 1);
+      const point = spoutCurve.getPointAt(t);
+      const r = 0.32 - t * 0.18;
+      const geom = new THREE.SphereGeometry(r, 12, 12);
+      const mesh = new THREE.Mesh(geom, pumpMaterial);
+      mesh.position.copy(point);
+      pumpGroup.add(mesh);
+    }
+
+    bottleGroup.position.y = -0.3;
+    bottleGroup.rotation.x = 0.1;
+    bottleGroup.rotation.z = -0.15;
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.3);
+    dirLight1.position.set(6, 6, 6); scene.add(dirLight1);
+    const dirLight2 = new THREE.DirectionalLight(0xdbeafe, 0.8);
+    dirLight2.position.set(-6, 3, 5); scene.add(dirLight2);
+    const rimLight = new THREE.DirectionalLight(0xa78bfa, 1.4);
+    rimLight.position.set(0, 6, -6); scene.add(rimLight);
+    const topLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    topLight.position.set(0, 10, 0); scene.add(topLight);
+
+    // ---------- Interaction: mouse-follow (desktop) + drag (touch) ----------
+    let targetRotationY = -0.22, targetRotationX = 0.15, targetRotationZ = 0.28;
+    let mouseX = 0, mouseY = 0;
+    let isHovered = false;
+    let isDragging = false;
+    let lastPX = 0, lastPY = 0;
+    let dragRotY = 0, dragRotX = 0;
+
+    container.addEventListener('pointerenter', function () { isHovered = true; hint.style.opacity = '0'; });
+    container.addEventListener('pointerleave', function () { isHovered = false; if (!isDragging) hint.style.opacity = '1'; });
+
+    container.addEventListener('pointermove', function (e) {
+      const rect = container.getBoundingClientRect();
+      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+
+      if (isDragging) {
+        const dx = e.clientX - lastPX;
+        const dy = e.clientY - lastPY;
+        lastPX = e.clientX; lastPY = e.clientY;
+        dragRotY += dx * 0.012;
+        dragRotX += dy * 0.008;
+      }
+    });
+
+    container.addEventListener('pointerdown', function (e) {
+      isDragging = true;
+      container.style.cursor = 'grabbing';
+      lastPX = e.clientX; lastPY = e.clientY;
+      hint.style.opacity = '0';
+    });
+    window.addEventListener('pointerup', function () {
+      isDragging = false;
+      container.style.cursor = 'grab';
+    });
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+
+      bottleGroup.rotation.y += (targetRotationY - bottleGroup.rotation.y) * 0.06;
+      bottleGroup.rotation.x += (targetRotationX - bottleGroup.rotation.x) * 0.06;
+      bottleGroup.rotation.z += (targetRotationZ - bottleGroup.rotation.z) * 0.06;
+
+      const floatY = Math.sin(time * 0.0012) * 0.12;
+      bottleGroup.position.y = -0.3 + floatY;
+      const swayZ = Math.sin(time * 0.0008) * 0.02;
+
+      if (isDragging) {
+        targetRotationY = dragRotY;
+        targetRotationX = Math.max(-0.7, Math.min(0.7, dragRotX));
+        targetRotationZ = -Math.sin(dragRotY) * 0.15;
+      } else if (isHovered) {
+        targetRotationY = mouseX * Math.PI * 2.2;
+        targetRotationX = mouseY * Math.PI * 0.65;
+        targetRotationZ = -mouseX * 0.2 + swayZ;
+        dragRotY = targetRotationY; // keep drag continuity if user starts dragging next
+        dragRotX = targetRotationX;
+      } else {
+        targetRotationY += (dragRotY - targetRotationY) * 0; // no-op, kept for clarity
+        targetRotationY = -0.22;
+        targetRotationX = 0.15;
+        targetRotationZ = 0.28 + swayZ;
+      }
+
+      pumpGroup.rotation.y = Math.sin(time * 0.0006) * 0.06;
+
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+
+    function handleResize() {
+      const w = container.clientWidth || 400;
+      const h = container.clientHeight || 400;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+    if (window.ResizeObserver) {
+      new ResizeObserver(handleResize).observe(container);
+    }
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(init, 50);
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+})();
+</script>
