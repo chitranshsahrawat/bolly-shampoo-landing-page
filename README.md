@@ -55,4 +55,4 @@ featuring a custom **interactive 3D product viewer** built with Three.js.
 - 320px: verified no overflow, all text and controls remain usable
 
 ## Author
-[Your name]
+CHITRANSH SAHRAWAT
